@@ -34,10 +34,12 @@ For a production-style server (what a host actually runs):
 
 Starts the production server and opens a Cloudflare quick tunnel, printing an
 address like `https://random-words-here.trycloudflare.com`. The site is then
-reachable from any device on the internet. The address only lives as long as
-the window stays open, and a new address is issued on each run - use option 2
-for a permanent home. The tunnel client is downloaded into `.tools/` on first
-use; `.tools/` is git-ignored.
+reachable from any device on the internet.
+
+Closing the window (or Ctrl+C) stops both the tunnel and the server it started,
+so the address is temporary and a new one is issued on the next run - use
+option 2 for a permanent home. The tunnel client is downloaded into `.tools/`
+on first use; `.tools/` is git-ignored.
 
 ### Option 2 - permanent hosting on Render (free tier)
 
@@ -91,7 +93,13 @@ python _verify_endpoints.py
 $env:CALC_BASE_URL = "https://your-app.onrender.com"; python _verify_endpoints.py
 ```
 
-Every line should print `PASS` and the total failures must be `0`.
+Every line should print `PASS` and the total failures must be `0`. Remote hosts
+and tunnels answer more slowly than localhost, so raise the per-request timeout
+if a run trips over the network rather than the app:
+
+```powershell
+$env:CALC_TIMEOUT_SECONDS = "30"; python _verify_endpoints.py
+```
 
 ## Project layout
 

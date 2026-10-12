@@ -5,7 +5,10 @@ import urllib.request
 
 # Point the suite at any deployment:
 #   set CALC_BASE_URL=https://your-app.example.com
+# Public hosts and tunnels answer more slowly than localhost, so the request
+# timeout is configurable too.
 BASE = os.environ.get("CALC_BASE_URL", "http://127.0.0.1:5000").rstrip("/")
+TIMEOUT_SECONDS = float(os.environ.get("CALC_TIMEOUT_SECONDS", "10"))
 
 failures = []
 
@@ -18,7 +21,7 @@ def check(label, actual, expected):
 
 
 def get(path):
-    with urllib.request.urlopen(BASE + path, timeout=10) as response:
+    with urllib.request.urlopen(BASE + path, timeout=TIMEOUT_SECONDS) as response:
         return response.status, response.read().decode("utf-8")
 
 
@@ -31,7 +34,7 @@ def post(payload):
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
+        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
             return response.status, json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         return error.code, json.loads(error.read().decode("utf-8"))
