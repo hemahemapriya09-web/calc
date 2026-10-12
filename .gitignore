@@ -1,0 +1,22 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local secrets and machine-specific config
+.env
+.env.*
+*.local
+
+# Local tunnel/tooling binaries (cloudflared, ngrok, ...)
+.tools/
+
+# Logs and editor noise
+*.log
+.DS_Store
+Thumbs.db

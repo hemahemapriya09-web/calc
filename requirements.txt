@@ -1,0 +1,6 @@
+# Runtime dependencies. The production WSGI server is chosen per platform:
+# Linux hosts (Render, Railway, Fly.io, Heroku) get gunicorn, Windows gets
+# waitress, which is the equivalent WSGI server that actually runs there.
+Flask>=3.1
+gunicorn>=23.0; sys_platform != "win32"
+waitress>=3.0; sys_platform == "win32"

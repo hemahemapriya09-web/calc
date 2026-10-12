@@ -1,0 +1,14 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.git/
+.gitignore
+.tools/
+venv/
+*.log
+README.md
+_verify_endpoints.py
+_*.py
