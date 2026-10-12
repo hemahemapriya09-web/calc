@@ -1,8 +1,12 @@
 # Scientific Calculator
 
+*helps us solve complex equation at better way*
+
 A Flask web app: a scientific calculator UI that evaluates expressions on the
 server with a whitelisted AST evaluator. No `eval`, no expression ever reaches
 Python's builtins scope.
+
+Released under the MIT License, see `LICENSE`.
 
 * `GET /` — the calculator page
 * `POST /calculate` — JSON API, `{"expression": "sin(30)", "mode": "DEG"}`
