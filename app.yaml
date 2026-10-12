@@ -1,0 +1,26 @@
+# Google App Engine (standard environment) configuration.
+#
+# Deploy from this directory with:
+#
+#   gcloud app deploy
+#
+# App Engine builds a Linux image, installs requirements.txt (which pulls
+# gunicorn), starts the entrypoint below on the port it assigns through $PORT,
+# and routes every request to it. The service answers on
+# https://<project-id>.appspot.com and on any custom domain you map to it.
+
+runtime: python312
+
+entrypoint: gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 60 wsgi:app
+
+# F1 is the cheapest instance class: 384 MB, burstable CPU. Plenty for this app.
+instance_class: F1
+
+automatic_scaling:
+  # Scale to zero when idle so an unused deployment costs nothing.
+  min_instances: 0
+  max_instances: 2
+  target_cpu_utilization: 0.65
+
+env_variables:
+  PYTHONUNBUFFERED: "1"

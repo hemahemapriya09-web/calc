@@ -56,7 +56,29 @@ The service gets a stable `https://<name>.onrender.com` address and redeploys
 on every push. Free instances sleep after inactivity and take a few seconds to
 wake on the next request.
 
-### Option 3 - any container host (Cloud Run, Fly.io, Railway, Kubernetes)
+### Option 3 - Google App Engine (standard environment)
+
+`app.yaml` is already configured: `runtime: python312`, a gunicorn entrypoint,
+an F1 instance and scale-to-zero scaling. App Engine needs a billing account
+attached to the project (the free tier still requires one), so this is the one
+option that needs a payment method on file.
+
+```powershell
+gcloud projects create calc-hemahemapriya --name="Scientific Calculator"
+gcloud config set project calc-hemahemapriya
+gcloud app create --region=asia-south1   # first deployment only
+gcloud app deploy                        # run from this directory
+```
+
+Until a billing account is attached, `gcloud app create` stops with
+`The project must have a billing account attached`; add one at
+<https://console.cloud.google.com/billing>. The first `gcloud app deploy` also
+asks to create the App Engine service account, then uploads, builds and serves
+the app on `https://<project-id>.appspot.com`. gunicorn comes from
+`requirements.txt`; `.gcloudignore` keeps `.venv` and the local tunnel tools out
+of the upload. Later deploys are incremental.
+
+### Option 4 - any container host (Cloud Run, Fly.io, Railway, Kubernetes)
 
 ```powershell
 docker build -t scientific-calculator .
@@ -66,7 +88,7 @@ docker run -p 8080:8080 scientific-calculator
 The image listens on `$PORT` (default `8080`) and serves through gunicorn, so
 it drops into any platform that runs a container.
 
-### Option 4 - Railway / Heroku-style buildpack
+### Option 5 - Railway / Heroku-style buildpack
 
 Both read `Procfile`, which is already present:
 
@@ -117,6 +139,7 @@ $env:CALC_TIMEOUT_SECONDS = "30"; python _verify_endpoints.py
 | `dialect.py` | Single source of truth for modes, keypad vocabulary and limits |
 | `errors.py` | `CalculationError` shared by the evaluator and the API |
 | `templates/index.html` | The calculator page (styles, keypad, fetch client) |
-| `render.yaml`, `Procfile`, `Dockerfile` | Deployment targets |
+| `render.yaml`, `Procfile`, `Dockerfile`, `app.yaml` | Deployment targets |
+| `.dockerignore`, `.gcloudignore` | Exclusions for the Docker build and the App Engine upload |
 | `start.ps1`, `share.ps1` | Run locally / publish publicly |
 | `_verify_endpoints.py` | End-to-end endpoint tests |
