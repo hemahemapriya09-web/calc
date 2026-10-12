@@ -9,9 +9,13 @@
 # and routes every request to it. The service answers on
 # https://<project-id>.appspot.com and on any custom domain you map to it.
 
+# python312 is a supported App Engine runtime; its end of support is 2028-10-02.
 runtime: python312
 
-entrypoint: gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 60 wsgi:app
+# With --threads greater than 1 the threaded worker class is required, so it is
+# pinned here rather than left to gunicorn's automatic switch. One worker with
+# 8 threads keeps memory comfortably inside an F1 instance.
+entrypoint: gunicorn --bind :$PORT --worker-class gthread --workers 1 --threads 8 --timeout 60 wsgi:app
 
 # F1 is the cheapest instance class: 384 MB, burstable CPU. Plenty for this app.
 instance_class: F1
