@@ -61,22 +61,33 @@ wake on the next request.
 `app.yaml` is already configured: `runtime: python312`, a gunicorn entrypoint,
 an F1 instance and scale-to-zero scaling. App Engine needs a billing account
 attached to the project (the free tier still requires one), so this is the one
-option that needs a payment method on file.
+option that needs a payment method on file. A card that scales to zero sits
+inside the free daily quota, so the deployment stays at zero cost when idle.
+
+Add the payment method once at <https://console.cloud.google.com/billing/create>,
+then deploy with the script - it locates gcloud, checks the account, enables
+billing, creates the App Engine application the first time, deploys and verifies:
+
+```powershell
+.\deploy-appengine.ps1 -Verify                      # region us-central1
+.\deploy-appengine.ps1 -Region asia-south1 -Verify   # Mumbai, closer to India
+```
+
+The region is permanent once the application is created, and is only used the
+first time. The equivalent manual steps are:
 
 ```powershell
 gcloud projects create calc-hemahemapriya --name="Scientific Calculator"
 gcloud config set project calc-hemahemapriya
-gcloud app create --region=asia-south1   # first deployment only
+gcloud app create --region=us-central1   # first deployment only
 gcloud app deploy                        # run from this directory
 ```
 
 Until a billing account is attached, `gcloud app create` stops with
-`The project must have a billing account attached`; add one at
-<https://console.cloud.google.com/billing>. The first `gcloud app deploy` also
-asks to create the App Engine service account, then uploads, builds and serves
-the app on `https://<project-id>.appspot.com`. gunicorn comes from
+`The project must have a billing account attached`. gunicorn comes from
 `requirements.txt`; `.gcloudignore` keeps `.venv` and the local tunnel tools out
-of the upload. Later deploys are incremental.
+of the upload. The app is served on `https://<project-id>.appspot.com` and later
+deploys are incremental.
 
 ### Option 4 - any container host (Cloud Run, Fly.io, Railway, Kubernetes)
 
@@ -141,5 +152,5 @@ $env:CALC_TIMEOUT_SECONDS = "30"; python _verify_endpoints.py
 | `templates/index.html` | The calculator page (styles, keypad, fetch client) |
 | `render.yaml`, `Procfile`, `Dockerfile`, `app.yaml` | Deployment targets |
 | `.dockerignore`, `.gcloudignore` | Exclusions for the Docker build and the App Engine upload |
-| `start.ps1`, `share.ps1` | Run locally / publish publicly |
+| `start.ps1`, `share.ps1`, `deploy-appengine.ps1` | Run locally / publish publicly / deploy to App Engine |
 | `_verify_endpoints.py` | End-to-end endpoint tests |
